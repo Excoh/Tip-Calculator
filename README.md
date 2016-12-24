@@ -38,7 +38,10 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
 ## Notes
 
-Describe any challenges encountered while building the app.
+Challenges:
+
+    - Setting up the server to parse and run PHP.
+    - Making the design look the way I want it with the use of bootstrap and css.
 
 ## License
 
