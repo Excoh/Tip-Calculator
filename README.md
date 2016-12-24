@@ -3,7 +3,7 @@ A simple tip calculator using html and css. Uses bootstrap and some php.
 
 # Pre-work - TipCalc
 
-TipCaclc is a tip calculator PHP page.
+TipCalc is a tip calculator PHP page.
 
 Submitted by: Excel Ortega
 
@@ -38,10 +38,10 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
 ## Notes
 
-Challenges:
+__Challenges__
 
-    - Setting up the server to parse and run PHP.
-    - Making the design look the way I want it with the use of bootstrap and css.
+    * Setting up the server to parse and run PHP.
+    * Making the design look the way I want it with the use of bootstrap and css.
 
 ## License
 
