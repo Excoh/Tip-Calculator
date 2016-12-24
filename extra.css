@@ -1,0 +1,20 @@
+.col-md-4 {
+}
+
+.tip {
+  font-size: 1.25em;
+  margin: 0;
+}
+
+.space {
+  min-width: 1px;
+  height: 5%;
+}
+
+.no-margin {
+  margin: 0;
+}
+
+.btn-no-radius {
+  border-radius: 0;
+}
