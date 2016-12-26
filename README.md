@@ -31,9 +31,13 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-GIF COMING SOON.
+Gif of tip calculator with:
+No Error
 <!-- <img src='http://i.imgur.com/link/to/your/gif/file.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' /> -->
 <img src='http://imgur.com/JCfvkZi.gif' title='Video Walkthrough No Error' width='' alt='Video Walkthrough No Error' />
+
+With Error
+<img src='http://imgur.com/clzVE34.gif' title='Video Walkthrough No Error' width='' alt='Video Walkthrough No Error' />
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
