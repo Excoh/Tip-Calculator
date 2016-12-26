@@ -25,17 +25,17 @@
 
     <?php // Variable initializiation
       include 'custom_messages.php';
-      $totalprice = $discount = $tipval = $customDiscount = $splitTotal = $splitTip = "";
-      $totalpriceErr = $discountErr = $tipvalErr = "";
-      $validDiscount = $validSplit = $validPrice = false;
+      $totalprice = $tip = $tipAmount = $customDiscount = $splitTotal = $splitTip = "";
+      $totalpriceErr = $tipErr = $customDiscountErr = $splitErr = "";
+      $validTip = $validSplit = $validPrice = false;
       $split = 1;
     ?>
 
-    <div class="container-fluid">
+    <div class="container">
 
       <div class="row">
       <div class="col-md-4"></div>
-      <div class="col-md-4">
+      <div class="col-md-4 thin-border no-padding">
 
       <?php // Input Validation
         if (isset($_POST['submit']))
@@ -43,42 +43,55 @@
 
           $totalprice = $_POST['totalprice'];
           if (empty($_POST['discount']))
-          { // if variables were used, it would be considered as null
-            echo $empty_discount;
+          {
+            $tipErr = $empty_discount;
           }
           else
-          { // $discount is not empty
+          { // $tip is not empty
 
-            $discount = $_POST['discount'];
-           if ($discount == "custom")
+            $tip = $_POST['discount'];
+            $validTip = true;
+
+           if ($tip == "custom")
            {
 
                $customDiscount = $_POST['customDscnt'];
-               if (empty($customDiscount))
-               {
-                  echo $empty_custom_discount;
-               }
-               else if ($customDiscount > 100)
-               {
-                 echo "<small>".$discount_too_high."</small>";
-               }
-               else
+               if (is_numeric($customDiscount))
                {
                  $customDiscount = floatval($customDiscount);
+
+                 if ($customDiscount > 100)
+                 {
+                    $customDiscountErr = $tip_too_high;
+                    $validTip = false;
+                 }
+                 else if ($customDiscount < 0)
+                 {
+                   $customDiscountErr = $wrong_custom_tip;
+                   $validTip = false;
+                 }
+                 else if ($customDiscount == 0)
+                 {
+                   $customDiscountErr = $zero_tip;
+                 }
+               }
+               else if (empty($customDiscount) || !is_numeric($customDiscount))
+               {
+                  $customDiscountErr = $empty_custom_discount;
+                  $validTip = false;
                }
 
             }
-             $validDiscount = true;
 
-         }
+         } // end of discount check else
 
-          if (!is_numeric($totalprice) || $totalprice < 0)
+          if (!is_numeric($totalprice) || $totalprice < 0 || empty($totalprice))
           {
-            echo $enter_valid_price;
+            $totalpriceErr = $enter_valid_price;
           }
           else
           {
-            $tip = $totalprice;
+            $tipAmount = $totalprice;
             $validPrice = true;
           }
 
@@ -93,7 +106,7 @@
             else
             {
               $split = $_POST['split'];
-              echo "<p>".$split_error."</p>";
+              $splitErr = $split_error;
             }
 
           }
@@ -102,60 +115,66 @@
       ?>
       <?php // Calculate Tip
 
-        if ($validDiscount && $validPrice)
+        if ($validTip && $validPrice)
         {
 
-          if ($discount == "custom")
+          if ($tip == "custom")
           {
-            $tip *= $customDiscount/100;
+            $tipAmount *= $customDiscount/100;
           }
-          else if ($discount == .10)
+          else if ($tip == .10)
           {
-            $tip *= .10;
+            $tipAmount *= .10;
           }
-          else if ($discount == .15)
+          else if ($tip == .15)
           {
-            $tip *= .15;
+            $tipAmount *= .15;
           }
-          else if ($discount == .20)
+          else if ($tip == .20)
           {
-            $tip *= .20;
+            $tipAmount *= .20;
           }
-          $finalprice = floatval($totalprice + $tip);
+          $finalprice = floatval($totalprice) + floatval($tipAmount);
+
           if ($validSplit)
           {
             $split = floatval($_POST['split']);
             $splitTotal = $finalprice / $split;
-            $splitTip = $tip / $split;
+            $splitTip = $tipAmount / $split;
           }
 
         }
       ?>
 
-      <h3> TIP CALCULATOR </h3>
+      <h2 class="hx-center no-margin bot-padding-10 top-padding-10 bot-border">TIP CALCULATOR</h2>
+
       <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
 
-        <div class="form-inline">
-          <div class="form-group">
-            <label  for="subtotal">Bill Subtotal: $</label>
-            <input type="text" class="form-control" name="totalprice" value="<?php echo $totalprice?>" id="subtotal" placeholder="0.00">
+          <div class="form-group no-margin bot-padding bot-border">
+            <label for="subtotal" class="no-margin bot-padding top-padding-1">
+              <span class="h4 hx-center">Bill Subtotal</span>
+            </label>
+            <div class="form-inline">
+              <label for="subtotal">$</label>
+              <input type="text" class="form-control <?php if (!$validPrice && isset($_POST['submit'])) echo 'input-red'?>" name="totalprice" value="<?php echo $totalprice?>" id="subtotal" placeholder="0.00">
+              <p class="no-margin no-padding error-msg"><?php echo $totalpriceErr; ?></p>
+            </div>
           </div>
-        </div>
 
-        <div class="form-group">
-          <label>Tip Percentage:</label>
-        </div>
+        <div class="form-group no-margin bot-padding">
+        <label class="no-margin bot-padding top-padding-1">
+          <span class="h4 hx-center">Tip Percentage</span>
+        </label>
 
         <div class="form-inline">
-
           <?php
             $value = 0.10;
             for ($i = 0; $i < 3; $i++)
             {
           ?>
             <!-- for loop body -->
-              <div class="form-group">
-                <input type="radio" name="discount" id="<?php echo $value?>" value="<?php echo $value?>" <?php if (isset($discount) && (round($discount,2) == round($value,2))) echo "checked";?>>
+              <div class="form-group col-sm-4 col-md-4 no-left-padding bot-padding">
+                <input type="radio" name="discount" id="<?php echo $value?>" value="<?php echo $value?>" <?php if (isset($tip) && (round($tip,2) == round($value,2))) echo "checked";?>>
                 <label for="<?php echo $value?>" class="radio-inline">
                   <?php echo ($value * 100).'%';?>
                 </label>
@@ -167,31 +186,46 @@
 
         </div>
 
-        <div class="form-inline">
+        <div class="form-inline bot-padding bot-border">
           <div class="form-group">
-            <label class="radio-inline" for="custom">Custom: </label>
-            <input type="radio" name="discount" value="custom" <?php if (isset($discount) && $discount == "custom") echo "checked";?> id="custom">
-            <input type="text" class="form-control" name ="customDscnt" value="<?php echo $customDiscount?>">
+              <label for="custom">Custom: </label>
+              <input type="radio" name="discount" value="custom" <?php if (isset($tip) && $tip == "custom") echo "checked";?>  id="custom">
+            <div class="form-group">
+              <input type="text" class="form-control <?php if ( ($tip=='custom' && (!isset($_POST['customDscnt']) || !$validTip)) && isset($_POST['submit']) ) echo 'input-red'?>" name ="customDscnt" value="<?php echo $customDiscount?>" placeholder="0">
+              <label>%</label>
+            </div>
           </div>
+          <p class="no-margin no-padding error-msg"><?php echo $tipErr; ?></p>
+          <p class="no-margin no-padding error-msg"><?php echo $customDiscountErr; ?></p>
+        </div>
+      </div><!-- TIP PERCENTAGE CHUNK -->
+
+        <div class="form-group no-margin bot-padding">
+          <label for="split" class="no-margin bot-padding">
+            <span class="h4">Split</span>
+          </label>
+
+          <div class="form-inline no-margin bot-padding">
+            <div class="form-group">
+              <input type="text" class="form-control <?php if (!$validSplit && isset($_POST['submit'])) echo 'input-red'?>" name="split" id="split" value="<?php echo $split;?>" placeholder="1">
+              <label>person(s)</label>
+            </div>
+            <p class="no-margin no-padding error-msg"><?php echo $splitErr ?></p>
+          </div>
+
         </div>
 
-        <p class="no-margin">
-          <span>Split: </span>
-          <input type="text" class="form-control" name="split" size =5 value="<?php echo $split;?>">
-          <span>person(s)</span>
-        </p>
-
-        <p>
-          <input type="submit" class="btn btn-default btn-no-radius" name="submit" value="Calculate Tip"> 
-        </p>
+        <div class="form-group no-margin bot-padding">
+          <input type="submit" class="btn btn-default btn-no-radius center-block" name="submit" value="Calculate Tip">
+        </div>
 
       </form>
 
       <p class="tip">
         <?php
-          if ($validPrice && $validDiscount && $validSplit) {
+          if ($validPrice && $validTip && $validSplit) {
 
-            echo "Tip: $".number_format($tip,2);
+            echo "Tip: $".number_format($tipAmount,2);
             echo "<br>";
             echo "Total: $".number_format($finalprice,2);
             echo "<br>";
